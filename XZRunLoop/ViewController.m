@@ -21,7 +21,7 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    self.experimentType = 8;
+    self.experimentType = 9;
     /*
      iOS 系统中，提供了两种RunLoop：NSRunLoop 和 CFRunLoopRef。
      CFRunLoopRef 是在 CoreFoundation 框架内的，它提供了纯 C 函数的 API，所有这些 API 都是线程安全的。
@@ -117,6 +117,22 @@
         self.subThreeThread = tmpThread;
         self.subThreeThread.name = @"subThreeThread";
         [self.subThreeThread start];
+    }
+    
+    //RunLoop状态监听
+    //CFRunLoopAddObserver(CFRunLoopRef rl, CFRunLoopObserverRef observer, CFStringRef mode)
+    /*
+         第一个参数：RunLoop
+         第二个参数：observer
+         第三个参数：mode
+     */
+    if(9==self.experimentType){
+        CFRunLoopObserverRef observer = CFRunLoopObserverCreateWithHandler(CFAllocatorGetDefault(), kCFRunLoopAllActivities, YES, 0, ^(CFRunLoopObserverRef observer, CFRunLoopActivity activity) {
+            NSLog(@"-----------%zd",activity);
+        });
+        //添加监听者
+        CFRunLoopAddObserver(CFRunLoopGetCurrent(), observer, kCFRunLoopDefaultMode);
+        CFRelease(observer);//释放
     }
     
 }

@@ -12,6 +12,8 @@
 @interface ViewController ()
 @property(nonatomic,assign)NSInteger experimentType;
 @property(nonatomic,strong)MyThread * subThread;
+@property(nonatomic,weak)MyThread * subTwoThread;
+@property(nonatomic,weak)MyThread * subThreeThread;
 @end
 
 @implementation ViewController
@@ -19,7 +21,7 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    self.experimentType = 5;
+    self.experimentType = 8;
     /*
      iOS 系统中，提供了两种RunLoop：NSRunLoop 和 CFRunLoopRef。
      CFRunLoopRef 是在 CoreFoundation 框架内的，它提供了纯 C 函数的 API，所有这些 API 都是线程安全的。
@@ -86,6 +88,37 @@
         [subThread start];
     }
     
+    if(6==self.experimentType){
+        NSLog(@"%@----开辟子线程",[NSThread currentThread]);
+        
+        MyThread *tmpThread = [[MyThread alloc] initWithTarget:self selector:@selector(subThreadTodo) object:nil];
+        //subThread用weak声明，用weak声明，用weak声明
+        self.subTwoThread = tmpThread;
+        self.subTwoThread.name = @"subTwoThread";
+        [self.subTwoThread start];
+    }
+    
+    if(7==self.experimentType){
+        NSTimer * timer = [NSTimer timerWithTimeInterval:5 target:self selector:@selector(wantTodo) userInfo:nil repeats:YES];
+        //timerWith开头的方法创建的Timer如果不加下面一句无法运行。
+        [[NSRunLoop currentRunLoop] addTimer:timer forMode:NSDefaultRunLoopMode];
+        /*
+         其实NSTimer定时器的触发正是基于RunLoop运行的，所以使用NSTimer之前必须注册到RunLoop。
+         同时我们也应该知道Timer并不是严格的按照设定的时间点来触发的，
+         RunLoop为了节省资源并不会在非常准确的时间点调用定时器，
+         如果一个任务执行时间较长，那么当错过一个时间点后只能等到下一个时间点执行，并不会延后执行。
+         */
+    }
+    
+    if(8==self.experimentType){
+        NSLog(@"%@----开辟子线程",[NSThread currentThread]);
+        MyThread *tmpThread = [[MyThread alloc] initWithTarget:self selector:@selector(subThreadTodo) object:nil];
+        //subThread用weak声明，用weak声明，用weak声明
+        self.subThreeThread = tmpThread;
+        self.subThreeThread.name = @"subThreeThread";
+        [self.subThreeThread start];
+    }
+    
 }
 
 -(void)subThreadTodo
@@ -150,9 +183,70 @@
         //RunLoop正常运行的条件是：1.有Mode。2.Mode有事件源。3.运行在有事件源的Mode下。
     }
     
+    if(6==self.experimentType){
+        NSLog(@"%@----开始执行子线程任务",[NSThread currentThread]);
+        NSRunLoop * runLoop = [NSRunLoop currentRunLoop];
+        [runLoop addPort:[NSMachPort port] forMode:NSDefaultRunLoopMode];
+        [runLoop runMode:NSDefaultRunLoopMode beforeDate:[NSDate distantFuture]];
+        NSLog(@"%@----执行子线程任务结束",[NSThread currentThread]);
+    }
+    
+    if(8==self.experimentType){
+        NSLog(@"%@----开始执行子线程任务",[NSThread currentThread]);
+        NSRunLoop * runLoop = [NSRunLoop currentRunLoop];
+        [runLoop addPort:[NSMachPort port] forMode:NSDefaultRunLoopMode];
+        [runLoop runMode:NSDefaultRunLoopMode beforeDate:[NSDate distantFuture]];
+        NSLog(@"%@----执行子线程任务结束",[NSThread currentThread]);
+    }
     
     
+}
+
+//我们希望放在子线程中执行的任务
+- (void)wantTodo
+{
+    if(6==self.experimentType){
+        //断点2
+        NSLog(@"当前线程:%@执行任务处理数据", [NSThread currentThread]);
+        //log
+        /*
+         2018-09-13 11:10:42.430775+0800 XZRunLoop[4638:1064499] <NSThread: 0x117e05960>{number = 1, name = main}----开辟子线程
+         2018-09-13 11:10:42.433416+0800 XZRunLoop[4638:1064578] <MyThread: 0x117ea7a20>{number = 4, name = subTwoThread}----开始执行子线程任务
+         2018-09-13 11:10:47.442705+0800 XZRunLoop[4638:1064578] 当前线程:<MyThread: 0x117ea7a20>{number = 4, name = subTwoThread}执行任务处理数据
+         2018-09-13 11:10:47.443017+0800 XZRunLoop[4638:1064578] <MyThread: 0x117ea7a20>{number = 4, name = subTwoThread}----执行子线程任务结束
+         2018-09-13 11:10:47.443954+0800 XZRunLoop[4638:1064578] subTwoThread线程被释放了
+         */
+    }
     
+    if(7==self.experimentType){
+        NSLog(@"timer启动");
+    }
+    
+    if(8==self.experimentType){
+        //断点1
+        //1.这个方法是作用于当前线程，现在在子线程中调用这个函数，所以会作用于子线程的RunLoop
+        //self这个位置只要是继承自NSObject的对象都能填，但是他要有后面SEL的方法，否则会崩溃。（直白的说这个方法就是在当前线程中延迟调用某个对象的某个方法。）
+        [self performSelector:@selector(afterDelayTodo) withObject:nil afterDelay:0];
+        //当调用 performSelecter:afterDelay: 后，其内部会创建一个 Timer 并添加到当前线程的 RunLoop 中，所以这个方法是属于Timer源的。
+    }
+}
+
+- (void)afterDelayTodo{
+    //断点2
+    NSLog(@"当前线程:%@执行任务处理数据", [NSThread currentThread]);
+}
+
+//屏幕点击事件
+- (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
+{
+    //在子线程中去响应wantTodo方法
+    if(6==self.experimentType){
+        //断点1
+        [self performSelector:@selector(wantTodo) onThread:self.subTwoThread withObject:nil waitUntilDone:NO];
+    }
+    if(8==self.experimentType){
+        [self performSelector:@selector(wantTodo) onThread:self.subThreeThread withObject:nil waitUntilDone:NO];
+    }
 }
 
 - (void)didReceiveMemoryWarning {
@@ -163,5 +257,7 @@
 #pragma mark - lazy init
 @synthesize experimentType = _experimentType;
 @synthesize subThread = _subThread;
+@synthesize subTwoThread = _subTwoThread;
+@synthesize subThreeThread = _subThreeThread;
 
 @end

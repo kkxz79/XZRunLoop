@@ -9,5 +9,8 @@
 #import "MyThread.h"
 
 @implementation MyThread
-
+-(void)dealloc
+{
+    NSLog(@"%@线程被释放了",self.name);
+}
 @end

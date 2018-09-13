@@ -15,6 +15,7 @@
 		9B679D9C21490F8D003272AA /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 9B679D9B21490F8D003272AA /* main.m */; };
 		9B679DA621490F8D003272AA /* XZRunLoopTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 9B679DA521490F8D003272AA /* XZRunLoopTests.m */; };
 		9B679DB121490F8D003272AA /* XZRunLoopUITests.m in Sources */ = {isa = PBXBuildFile; fileRef = 9B679DB021490F8D003272AA /* XZRunLoopUITests.m */; };
+		9B679DC021491118003272AA /* MyThread.m in Sources */ = {isa = PBXBuildFile; fileRef = 9B679DBF21491118003272AA /* MyThread.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -51,6 +52,8 @@
 		9B679DAC21490F8D003272AA /* XZRunLoopUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = XZRunLoopUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		9B679DB021490F8D003272AA /* XZRunLoopUITests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = XZRunLoopUITests.m; sourceTree = "<group>"; };
 		9B679DB221490F8D003272AA /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		9B679DBE21491118003272AA /* MyThread.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MyThread.h; sourceTree = "<group>"; };
+		9B679DBF21491118003272AA /* MyThread.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MyThread.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -105,6 +108,8 @@
 				9B679D8D21490F8A003272AA /* AppDelegate.m */,
 				9B679D8F21490F8A003272AA /* ViewController.h */,
 				9B679D9021490F8A003272AA /* ViewController.m */,
+				9B679DBE21491118003272AA /* MyThread.h */,
+				9B679DBF21491118003272AA /* MyThread.m */,
 				9B679D9221490F8A003272AA /* Main.storyboard */,
 				9B679D9521490F8D003272AA /* Assets.xcassets */,
 				9B679D9721490F8D003272AA /* LaunchScreen.storyboard */,
@@ -265,6 +270,7 @@
 				9B679D9121490F8A003272AA /* ViewController.m in Sources */,
 				9B679D9C21490F8D003272AA /* main.m in Sources */,
 				9B679D8E21490F8A003272AA /* AppDelegate.m in Sources */,
+				9B679DC021491118003272AA /* MyThread.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

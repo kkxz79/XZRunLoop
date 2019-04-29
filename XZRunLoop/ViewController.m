@@ -21,7 +21,7 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    self.experimentType = 8;
+    self.experimentType = 9;
     /*
      iOS 系统中，提供了两种RunLoop：NSRunLoop 和 CFRunLoopRef。
      CFRunLoopRef 是在 CoreFoundation 框架内的，它提供了纯 C 函数的 API，所有这些 API 都是线程安全的。
